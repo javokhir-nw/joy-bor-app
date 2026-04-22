@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(flutter analyze:*)",
+      "Bash(./gradlew signingReport)",
+      "Read(//c/Program Files/**)",
+      "Read(//c/Program Files/Android/Android Studio/jbr/bin/**)",
+      "Read(//c/Users/Javohir/AppData/**)",
+      "Bash(\"/c/Program Files/Android/Android Studio/jbr/bin/keytool.exe\" -list -v -keystore \"C:/Users/Javohir/.android/debug.keystore\" -alias androiddebugkey -storepass android -keypass android)",
+      "Bash(xargs grep:*)",
+      "Bash(grep -E \"\\\\.\\(rules|json\\)$\")",
+      "Bash(/c/Users/Javohir/AppData/Local/Android/Sdk/platform-tools/adb.exe devices:*)",
+      "Bash(cmd /c \"cd /d C:\\\\Users\\\\Javohir\\\\Desktop\\\\uy_bor_app && firebase deploy --only storage\")",
+      "Bash(cmd /c \"cd /d C:\\\\Users\\\\Javohir\\\\Desktop\\\\uy_bor_app && firebase deploy --only storage 2>&1\")",
+      "mcp__claude_ai_Figma__get_metadata",
+      "mcp__claude_ai_Figma__get_design_context",
+      "mcp__claude_ai_Figma__get_screenshot",
+      "mcp__claude_ai_Figma__create_new_file",
+      "mcp__claude_ai_Figma__use_figma"
+    ]
+  }
+}
