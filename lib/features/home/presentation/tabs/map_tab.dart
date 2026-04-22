@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../listings/presentation/listing_detail_screen.dart';
 
@@ -17,30 +18,48 @@ class _MapTabState extends State<MapTab> {
   Set<Marker> _markers = {};
   List<Map<String, dynamic>> _listings = [];
   bool _loading = true;
+  bool _locationGranted = false;
   double _zoom = 12;
 
   @override
   void initState() {
     super.initState();
-    _loadListings();
+    _init();
+  }
+
+  Future<void> _init() async {
+    await _requestLocationPermission();
+    await _loadListings();
+  }
+
+  Future<void> _requestLocationPermission() async {
+    final status = await Permission.locationWhenInUse.status;
+    if (status.isDenied) {
+      final result = await Permission.locationWhenInUse.request();
+      if (mounted) {
+        setState(() => _locationGranted = result.isGranted);
+      }
+    } else if (status.isGranted) {
+      if (mounted) setState(() => _locationGranted = true);
+    } else if (status.isPermanentlyDenied) {
+      if (mounted) setState(() => _locationGranted = false);
+    }
   }
 
   Future<void> _loadListings() async {
-    final snap = await FirebaseFirestore.instance
-        .collection('listings')
-        .where('isActive', isEqualTo: true)
-        .get();
+    try {
+      final snap = await FirebaseFirestore.instance
+          .collection('listings')
+          .where('isActive', isEqualTo: true)
+          .get();
 
-    print('Jami: ${snap.docs.length}'); // ← shu qator
+      _listings = snap.docs
+          .where((d) => d['location'] != null)
+          .map((d) => d.data())
+          .toList();
+    } catch (_) {}
 
-    _listings = snap.docs
-        .where((d) => d['location'] != null)
-        .map((d) => d.data())
-        .toList();
-
-    print('Location borlar: ${_listings.length}'); // ← shu qator
-
-    setState(() => _loading = false);
+    if (mounted) setState(() => _loading = false);
     await _updateMarkers();
   }
 
@@ -60,9 +79,13 @@ class _MapTabState extends State<MapTab> {
         icon: icon,
         onTap: () {
           if (!isMulti) {
-            Navigator.push(context, MaterialPageRoute(
-              builder: (_) => ListingDetailScreen(data: c['items'][0]),
-            ));
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    ListingDetailScreen(data: c['items'][0]),
+              ),
+            );
           } else {
             _mapController?.animateCamera(
               CameraUpdate.newLatLngZoom(pos, _zoom + 2),
@@ -85,21 +108,32 @@ class _MapTabState extends State<MapTab> {
     final canvas = Canvas(recorder);
     const w = 120.0, h = 44.0;
     canvas.drawRRect(
-      RRect.fromRectAndRadius(Rect.fromLTWH(0, 0, w, h), const Radius.circular(22)),
-      Paint()..color = isMulti ? AppColors.accent : AppColors.primary,
+      RRect.fromRectAndRadius(
+          Rect.fromLTWH(0, 0, w, h), const Radius.circular(22)),
+      Paint()
+        ..color = isMulti ? AppColors.accent : AppColors.primary,
     );
     final tp = TextPainter(
-      text: TextSpan(text: label, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w700)),
+      text: TextSpan(
+        text: label,
+        style: const TextStyle(
+            color: Colors.white,
+            fontSize: 14,
+            fontWeight: FontWeight.w700),
+      ),
       textDirection: TextDirection.ltr,
     )..layout(maxWidth: w);
     tp.paint(canvas, Offset((w - tp.width) / 2, (h - tp.height) / 2));
-    final img = await recorder.endRecording().toImage(w.toInt(), h.toInt());
+    final img = await recorder
+        .endRecording()
+        .toImage(w.toInt(), h.toInt());
     final bytes = await img.toByteData(format: ui.ImageByteFormat.png);
-    return BitmapDescriptor.fromBytes(bytes!.buffer.asUint8List());
+    // fromBytes → bytes (deprecated fix)
+    return BitmapDescriptor.bytes(bytes!.buffer.asUint8List());
   }
 
-
-  List<Map<String, dynamic>> _cluster(List<Map<String, dynamic>> items, double zoom) {
+  List<Map<String, dynamic>> _cluster(
+      List<Map<String, dynamic>> items, double zoom) {
     final radius = 0.05 / pow(2, zoom - 12);
     final used = List.filled(items.length, false);
     final result = <Map<String, dynamic>>[];
@@ -113,7 +147,8 @@ class _MapTabState extends State<MapTab> {
       for (int j = i + 1; j < items.length; j++) {
         if (used[j]) continue;
         final loc2 = items[j]['location'] as GeoPoint;
-        final dist = _dist(loc.latitude, loc.longitude, loc2.latitude, loc2.longitude);
+        final dist = _dist(
+            loc.latitude, loc.longitude, loc2.latitude, loc2.longitude);
         if (dist < radius) {
           group.add(items[j]);
           used[j] = true;
@@ -123,14 +158,12 @@ class _MapTabState extends State<MapTab> {
       double lat = 0, lng = 0;
       for (final g in group) {
         final l = g['location'] as GeoPoint;
-        lat += l.latitude; lng += l.longitude;
+        lat += l.latitude;
+        lng += l.longitude;
       }
       result.add({
         'items': group,
         'position': LatLng(lat / group.length, lng / group.length),
-        'icon': BitmapDescriptor.defaultMarkerWithHue(
-          group.length > 1 ? BitmapDescriptor.hueAzure : BitmapDescriptor.hueBlue,
-        ),
       });
     }
     return result;
@@ -142,20 +175,73 @@ class _MapTabState extends State<MapTab> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [
-      GoogleMap(
-        initialCameraPosition: const CameraPosition(target: LatLng(41.2995, 69.2401), zoom: 12),
-        markers: _markers,
-        myLocationEnabled: true,
-        myLocationButtonEnabled: true,
-        onMapCreated: (c) => _mapController = c,
-        onCameraIdle: () async {
-          final zoom = await _mapController?.getZoomLevel() ?? 12;
-          _zoom = zoom;
-          await _updateMarkers();
-        },
-      ),
-      if (_loading) const Center(child: CircularProgressIndicator()),
-    ]);
+    if (_loading) {
+      return const Center(
+        child: CircularProgressIndicator(color: AppColors.primary),
+      );
+    }
+
+    return Stack(
+      children: [
+        GoogleMap(
+          initialCameraPosition: const CameraPosition(
+              target: LatLng(41.2995, 69.2401), zoom: 12),
+          markers: _markers,
+          myLocationEnabled: _locationGranted,
+          myLocationButtonEnabled: _locationGranted,
+          onMapCreated: (c) => _mapController = c,
+          onCameraIdle: () async {
+            final zoom = await _mapController?.getZoomLevel() ?? 12;
+            _zoom = zoom;
+            await _updateMarkers();
+          },
+        ),
+
+        // Ruxsat berilmagan holda pastda banner ko'rsatish
+        if (!_locationGranted)
+          Positioned(
+            bottom: 16,
+            left: 16,
+            right: 16,
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1E293B),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                    color: AppColors.divider, width: 0.5),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.location_off_outlined,
+                      color: AppColors.textSecondary, size: 20),
+                  const SizedBox(width: 10),
+                  const Expanded(
+                    child: Text(
+                      'Joylashuvga ruxsat berilmagan',
+                      style: TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 13),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      await openAppSettings();
+                    },
+                    style: TextButton.styleFrom(
+                      foregroundColor: AppColors.primary,
+                      padding: EdgeInsets.zero,
+                      minimumSize: const Size(60, 32),
+                    ),
+                    child: const Text('Ruxsat berish',
+                        style: TextStyle(fontSize: 13)),
+                  ),
+                ],
+              ),
+            ),
+          ),
+      ],
+    );
   }
 }
