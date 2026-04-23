@@ -254,8 +254,8 @@ class _AdminListingsScreenState extends State<AdminListingsScreen> {
                         horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: _foundOwnerUids.isNotEmpty
-                          ? AppColors.success.withOpacity(0.1)
-                          : AppColors.error.withOpacity(0.1),
+                          ? AppColors.success.withValues(alpha: 0.1)
+                          : AppColors.error.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(children: [
@@ -348,10 +348,10 @@ class _AdminListingsScreenState extends State<AdminListingsScreen> {
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
                           color: isFeatured
-                              ? AppColors.accent.withOpacity(0.5)
+                              ? AppColors.accent.withValues(alpha: 0.5)
                               : isActive
                                   ? AppColors.divider
-                                  : AppColors.error.withOpacity(0.3),
+                                  : AppColors.error.withValues(alpha: 0.3),
                         ),
                       ),
                       child: Column(
@@ -363,7 +363,7 @@ class _AdminListingsScreenState extends State<AdminListingsScreen> {
                               padding:
                                   const EdgeInsets.symmetric(vertical: 6),
                               decoration: BoxDecoration(
-                                color: AppColors.accent.withOpacity(0.15),
+                                color: AppColors.accent.withValues(alpha: 0.15),
                                 borderRadius: const BorderRadius.vertical(
                                     top: Radius.circular(16)),
                               ),
@@ -391,7 +391,7 @@ class _AdminListingsScreenState extends State<AdminListingsScreen> {
                                   const EdgeInsets.symmetric(vertical: 6),
                               decoration: BoxDecoration(
                                 color: const Color(0xFFFBBF24)
-                                    .withOpacity(0.1),
+                                    .withValues(alpha: 0.1),
                                 borderRadius: isFeatured
                                     ? BorderRadius.zero
                                     : const BorderRadius.vertical(
@@ -421,7 +421,7 @@ class _AdminListingsScreenState extends State<AdminListingsScreen> {
                                   const EdgeInsets.symmetric(vertical: 6),
                               decoration: BoxDecoration(
                                 color:
-                                    AppColors.error.withOpacity(0.1),
+                                    AppColors.error.withValues(alpha: 0.1),
                                 borderRadius: isFeatured
                                     ? BorderRadius.zero
                                     : const BorderRadius.vertical(
@@ -487,7 +487,7 @@ class _AdminListingsScreenState extends State<AdminListingsScreen> {
                                       side: BorderSide(
                                         color: isFeatured
                                             ? AppColors.accent
-                                                .withOpacity(0.5)
+                                                .withValues(alpha: 0.5)
                                             : AppColors.divider,
                                       ),
                                       shape: RoundedRectangleBorder(
@@ -547,7 +547,7 @@ class _AdminListingsScreenState extends State<AdminListingsScreen> {
                                         foregroundColor: AppColors.error,
                                         side: BorderSide(
                                             color: AppColors.error
-                                                .withOpacity(0.5)),
+                                                .withValues(alpha: 0.5)),
                                         shape: RoundedRectangleBorder(
                                             borderRadius:
                                                 BorderRadius.circular(10)),

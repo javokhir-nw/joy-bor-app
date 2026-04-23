@@ -1,4 +1,4 @@
-package com.example.uy_bor_app
+package uz.javohir.joybor
 
 import io.flutter.embedding.android.FlutterActivity
 

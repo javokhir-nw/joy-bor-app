@@ -254,7 +254,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                                       horizontal: 8, vertical: 4),
                                   decoration: BoxDecoration(
                                     color:
-                                        AppColors.accent.withOpacity(0.15),
+                                        AppColors.accent.withValues(alpha: 0.15),
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: Text('Admin',
@@ -316,10 +316,10 @@ class _ToggleItem extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: value ? color.withOpacity(0.1) : const Color(0xFF0F172A),
+        color: value ? color.withValues(alpha: 0.1) : const Color(0xFF0F172A),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-            color: value ? color.withOpacity(0.3) : AppColors.divider),
+            color: value ? color.withValues(alpha: 0.3) : AppColors.divider),
       ),
       child: Row(
         children: [

@@ -21,14 +21,19 @@ class MyListingsScreen extends StatelessWidget {
         scrolledUnderElevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back_ios_rounded,
-              color: AppColors.textPrimary),
+          icon: const Icon(
+            Icons.arrow_back_ios_rounded,
+            color: AppColors.textPrimary,
+          ),
         ),
-        title: const Text("Mening e'lonlarim",
-            style: TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.w700)),
+        title: const Text(
+          "Mening e'lonlarim",
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
@@ -39,12 +44,16 @@ class MyListingsScreen extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-                child: CircularProgressIndicator(color: AppColors.primary));
+              child: CircularProgressIndicator(color: AppColors.primary),
+            );
           }
           if (snapshot.hasError) {
             return Center(
-                child: Text('Xato: ${snapshot.error}',
-                    style: const TextStyle(color: AppColors.error)));
+              child: Text(
+                'Xato: ${snapshot.error}',
+                style: const TextStyle(color: AppColors.error),
+              ),
+            );
           }
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return const _EmptyState();
@@ -74,10 +83,12 @@ class MyListingsScreen extends StatelessWidget {
                   color: AppColors.error,
                 ),
                 const SizedBox(height: 10),
-                ...notApproved.map((doc) => _MyListingCard(
-                      data: doc.data() as Map<String, dynamic>,
-                      docId: doc.id,
-                    )),
+                ...notApproved.map(
+                  (doc) => _MyListingCard(
+                    data: doc.data() as Map<String, dynamic>,
+                    docId: doc.id,
+                  ),
+                ),
                 if (approved.isNotEmpty) const SizedBox(height: 8),
               ],
 
@@ -89,10 +100,12 @@ class MyListingsScreen extends StatelessWidget {
                   color: AppColors.success,
                 ),
                 const SizedBox(height: 10),
-                ...approved.map((doc) => _MyListingCard(
-                      data: doc.data() as Map<String, dynamic>,
-                      docId: doc.id,
-                    )),
+                ...approved.map(
+                  (doc) => _MyListingCard(
+                    data: doc.data() as Map<String, dynamic>,
+                    docId: doc.id,
+                  ),
+                ),
               ],
             ],
           );
@@ -107,8 +120,11 @@ class _SectionHeader extends StatelessWidget {
   final String label;
   final int count;
   final Color color;
-  const _SectionHeader(
-      {required this.label, required this.count, required this.color});
+  const _SectionHeader({
+    required this.label,
+    required this.count,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -123,19 +139,29 @@ class _SectionHeader extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 10),
-        Text(label,
-            style: TextStyle(
-                color: color, fontSize: 13, fontWeight: FontWeight.w700)),
+        Text(
+          label,
+          style: TextStyle(
+            color: color,
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
         const SizedBox(width: 8),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.12),
+            color: color.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(20),
           ),
-          child: Text('$count',
-              style: TextStyle(
-                  color: color, fontSize: 11, fontWeight: FontWeight.w600)),
+          child: Text(
+            '$count',
+            style: TextStyle(
+              color: color,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ),
       ],
     );
@@ -158,20 +184,23 @@ class _MyListingCard extends StatelessWidget {
     if (!_isApproved) return;
 
     final isActive = data['isActive'] ?? false;
-    await FirebaseFirestore.instance
-        .collection('listings')
-        .doc(docId)
-        .update({'isActive': !isActive});
+    await FirebaseFirestore.instance.collection('listings').doc(docId).update({
+      'isActive': !isActive,
+    });
 
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-            isActive ? "E'lon faolsizlantirildi" : "E'lon faollashtirildi"),
-        backgroundColor: isActive ? AppColors.error : AppColors.success,
-        behavior: SnackBarBehavior.floating,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            isActive ? "E'lon faolsizlantirildi" : "E'lon faollashtirildi",
+          ),
+          backgroundColor: isActive ? AppColors.error : AppColors.success,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
     }
   }
 
@@ -180,29 +209,38 @@ class _MyListingCard extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: const Color(0xFF1E293B),
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text("E'lonni o'chirish",
-            style: TextStyle(
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.w700)),
-        content: const Text("Bu e'lonni o'chirishni tasdiqlaysizmi?",
-            style: TextStyle(color: AppColors.textSecondary)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text(
+          "E'lonni o'chirish",
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        content: const Text(
+          "Bu e'lonni o'chirishni tasdiqlaysizmi?",
+          style: TextStyle(color: AppColors.textSecondary),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Bekor qilish',
-                style: TextStyle(color: AppColors.textSecondary)),
+            child: const Text(
+              'Bekor qilish',
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.error,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
-            child:
-                const Text("O'chirish", style: TextStyle(color: Colors.white)),
+            child: const Text(
+              "O'chirish",
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -215,13 +253,16 @@ class _MyListingCard extends StatelessWidget {
           .delete();
 
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: const Text("E'lon o'chirildi"),
-          backgroundColor: AppColors.error,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12)),
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text("E'lon o'chirildi"),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        );
       }
     }
   }
@@ -245,17 +286,15 @@ class _MyListingCard extends StatelessWidget {
     final price = (data['price'] ?? 0).toDouble();
     final currency = (data['currency'] ?? 'USD').toString();
     final period = data['period'] ?? 'oylik';
-    final rejectionReason =
-        (data['rejectionReason'] ?? '').toString().trim();
-    final moderationStatus =
-        (data['moderationStatus'] ?? 'pending').toString();
+    final rejectionReason = (data['rejectionReason'] ?? '').toString().trim();
+    final moderationStatus = (data['moderationStatus'] ?? 'pending').toString();
 
     // Border rangi: rejected=qizil, pending=sariq, approved=oddiy
     final borderColor = _isRejected
-        ? AppColors.error.withOpacity(0.4)
+        ? AppColors.error.withValues(alpha: 0.4)
         : moderationStatus == 'pending'
-            ? const Color(0xFFFBBF24).withOpacity(0.4)
-            : AppColors.divider;
+        ? const Color(0xFFFBBF24).withValues(alpha: 0.4)
+        : AppColors.divider;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -269,18 +308,24 @@ class _MyListingCard extends StatelessWidget {
         children: [
           // ── Rasm ──
           GestureDetector(
-            onTap: () => Navigator.push(context,
-                MaterialPageRoute(
-                    builder: (_) => ListingDetailScreen(data: data))),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ListingDetailScreen(data: data),
+              ),
+            ),
             child: ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(16)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(16),
+              ),
               child: images.isNotEmpty
-                  ? Image.network(images[0],
+                  ? Image.network(
+                      images[0],
                       height: 160,
                       width: double.infinity,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) => _placeholder())
+                      errorBuilder: (_, _, _) => _placeholder(),
+                    )
                   : _placeholder(),
             ),
           ),
@@ -294,27 +339,35 @@ class _MyListingCard extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: Text(data['title'] ?? '',
-                          style: const TextStyle(
-                              color: AppColors.textPrimary,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis),
+                      child: Text(
+                        data['title'] ?? '',
+                        style: const TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                     const SizedBox(width: 8),
-                    _StatusBadge(moderationStatus: moderationStatus,
-                        isActive: isActive),
+                    _StatusBadge(
+                      moderationStatus: moderationStatus,
+                      isActive: isActive,
+                    ),
                   ],
                 ),
                 const SizedBox(height: 6),
 
                 // ── Narx ──
-                Text('${formatPrice(price)} $currency / $period',
-                    style: const TextStyle(
-                        color: AppColors.accent,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700)),
+                Text(
+                  '${formatPrice(price)} $currency / $period',
+                  style: const TextStyle(
+                    color: AppColors.accent,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
 
                 // ── Rad etish sababi ──
                 if (_isRejected && rejectionReason.isNotEmpty) ...[
@@ -323,24 +376,29 @@ class _MyListingCard extends StatelessWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: AppColors.error.withOpacity(0.08),
+                      color: AppColors.error.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                          color: AppColors.error.withOpacity(0.25)),
+                        color: AppColors.error.withValues(alpha: 0.25),
+                      ),
                     ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.info_outline_rounded,
-                            size: 16, color: AppColors.error),
+                        const Icon(
+                          Icons.info_outline_rounded,
+                          size: 16,
+                          color: AppColors.error,
+                        ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             rejectionReason,
                             style: const TextStyle(
-                                color: AppColors.error,
-                                fontSize: 13,
-                                height: 1.4),
+                              color: AppColors.error,
+                              fontSize: 13,
+                              height: 1.4,
+                            ),
                           ),
                         ),
                       ],
@@ -355,21 +413,26 @@ class _MyListingCard extends StatelessWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFBBF24).withOpacity(0.08),
+                      color: const Color(0xFFFBBF24).withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                          color:
-                              const Color(0xFFFBBF24).withOpacity(0.25)),
+                        color: const Color(0xFFFBBF24).withValues(alpha: 0.25),
+                      ),
                     ),
                     child: const Row(
                       children: [
-                        Icon(Icons.hourglass_top_rounded,
-                            size: 16, color: Color(0xFFFBBF24)),
+                        Icon(
+                          Icons.hourglass_top_rounded,
+                          size: 16,
+                          color: Color(0xFFFBBF24),
+                        ),
                         SizedBox(width: 8),
                         Text(
                           'Admin tekshiruvini kutmoqda...',
                           style: TextStyle(
-                              color: Color(0xFFFBBF24), fontSize: 13),
+                            color: Color(0xFFFBBF24),
+                            fontSize: 13,
+                          ),
                         ),
                       ],
                     ),
@@ -397,26 +460,26 @@ class _MyListingCard extends StatelessWidget {
                                 : Icons.play_circle_outline_rounded,
                             size: 18,
                           ),
-                          label: Text(isActive
-                              ? 'Faolsizlantirish'
-                              : 'Faollashtirish'),
+                          label: Text(
+                            isActive ? 'Faolsizlantirish' : 'Faollashtirish',
+                          ),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: _isApproved
                                 ? (isActive
-                                    ? AppColors.textSecondary
-                                    : AppColors.success)
+                                      ? AppColors.textSecondary
+                                      : AppColors.success)
                                 : AppColors.textSecondary,
                             side: BorderSide(
                               color: _isApproved
                                   ? (isActive
-                                      ? AppColors.divider
-                                      : AppColors.success)
+                                        ? AppColors.divider
+                                        : AppColors.success)
                                   : AppColors.divider,
                             ),
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                            padding:
-                                const EdgeInsets.symmetric(vertical: 10),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 10),
                           ),
                         ),
                       ),
@@ -431,11 +494,15 @@ class _MyListingCard extends StatelessWidget {
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.primary,
                         side: BorderSide(
-                            color: AppColors.primary.withOpacity(0.5)),
+                          color: AppColors.primary.withValues(alpha: 0.5),
+                        ),
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                         padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 14),
+                          vertical: 10,
+                          horizontal: 14,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -443,17 +510,20 @@ class _MyListingCard extends StatelessWidget {
                     // O'chirish
                     OutlinedButton.icon(
                       onPressed: () => _delete(context),
-                      icon: const Icon(Icons.delete_outline_rounded,
-                          size: 18),
+                      icon: const Icon(Icons.delete_outline_rounded, size: 18),
                       label: const Text(''),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.error,
                         side: BorderSide(
-                            color: AppColors.error.withOpacity(0.5)),
+                          color: AppColors.error.withValues(alpha: 0.5),
+                        ),
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                         padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 14),
+                          vertical: 10,
+                          horizontal: 14,
+                        ),
                       ),
                     ),
                   ],
@@ -467,19 +537,23 @@ class _MyListingCard extends StatelessWidget {
   }
 
   Widget _placeholder() => Container(
-      height: 160,
-      color: AppColors.surface,
-      child: const Center(
-          child: Icon(Icons.home_work_rounded,
-              color: AppColors.textSecondary, size: 48)));
+    height: 160,
+    color: AppColors.surface,
+    child: const Center(
+      child: Icon(
+        Icons.home_work_rounded,
+        color: AppColors.textSecondary,
+        size: 48,
+      ),
+    ),
+  );
 }
 
 // ── Status badge ──────────────────────────────────────────────────────────────
 class _StatusBadge extends StatelessWidget {
   final String moderationStatus;
   final bool isActive;
-  const _StatusBadge(
-      {required this.moderationStatus, required this.isActive});
+  const _StatusBadge({required this.moderationStatus, required this.isActive});
 
   @override
   Widget build(BuildContext context) {
@@ -501,12 +575,17 @@ class _StatusBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
+        color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Text(label,
-          style: TextStyle(
-              color: color, fontSize: 11, fontWeight: FontWeight.w600)),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: color,
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
     );
   }
 }
@@ -516,22 +595,25 @@ class _EmptyState extends StatelessWidget {
   const _EmptyState();
   @override
   Widget build(BuildContext context) => const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.list_alt_rounded,
-                size: 64, color: AppColors.textSecondary),
-            SizedBox(height: 16),
-            Text("Hali e'lonlar yo'q",
-                style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600)),
-            SizedBox(height: 8),
-            Text("E'lon tab orqali yangi e'lon qo'shing",
-                style:
-                    TextStyle(color: AppColors.textSecondary, fontSize: 14)),
-          ],
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.list_alt_rounded, size: 64, color: AppColors.textSecondary),
+        SizedBox(height: 16),
+        Text(
+          "Hali e'lonlar yo'q",
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
         ),
-      );
+        SizedBox(height: 8),
+        Text(
+          "E'lon tab orqali yangi e'lon qo'shing",
+          style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+        ),
+      ],
+    ),
+  );
 }

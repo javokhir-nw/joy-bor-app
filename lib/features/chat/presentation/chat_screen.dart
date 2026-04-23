@@ -249,7 +249,7 @@ class _ListingCard extends StatelessWidget {
           color: const Color(0xFF1E293B),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-              color: AppColors.primary.withOpacity(0.3), width: 1),
+              color: AppColors.primary.withValues(alpha: 0.3), width: 1),
         ),
         child: Row(
           children: [
@@ -333,7 +333,7 @@ class _MessageBubble extends StatelessWidget {
               padding: const EdgeInsets.only(left: 4, bottom: 3),
               child: Text(otherUserName,
                   style: TextStyle(
-                      color: AppColors.primary.withOpacity(0.9),
+                      color: AppColors.primary.withValues(alpha: 0.9),
                       fontSize: 11,
                       fontWeight: FontWeight.w600)),
             ),
@@ -370,7 +370,7 @@ class _MessageBubble extends StatelessWidget {
                   child: Text(timeStr,
                       style: TextStyle(
                           color: isMe
-                              ? Colors.white.withOpacity(0.65)
+                              ? Colors.white.withValues(alpha: 0.65)
                               : AppColors.textSecondary,
                           fontSize: 10)),
                 ),

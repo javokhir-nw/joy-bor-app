@@ -48,6 +48,42 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:484020263911:android:1bed775c82e34b4476fb42",
+        "android_client_info": {
+          "package_name": "uz.javohir.joybor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "484020263911-6h939cqtbpfvih7lq8covdtk29prmr4e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB20yd7c4u0cW_PKSIeAyQRF5BH340t9cM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "484020263911-6h939cqtbpfvih7lq8covdtk29prmr4e.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "484020263911-8nm6o72ppc3e01fo78m4g4uldvffps46.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.uyBorApp"
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"

@@ -37,10 +37,10 @@ Future<void> _showNotification(RemoteMessage message) async {
   if (notification == null) return;
 
   await _localNotifications.show(
-    notification.hashCode,
-    notification.title,
-    notification.body,
-    const NotificationDetails(
+    id: notification.hashCode,
+    title: notification.title,
+    body: notification.body,
+    notificationDetails: const NotificationDetails(
       android: AndroidNotificationDetails(
         'high_importance_channel',
         'High Importance Notifications',
@@ -64,10 +64,12 @@ Future<void> _openChat(String? chatId) async {
         .get();
     if (!doc.exists) return;
 
-    navigatorKey.currentState?.push(MaterialPageRoute(
-      builder: (_) =>
-          ChatScreen(chatData: doc.data() as Map<String, dynamic>),
-    ));
+    navigatorKey.currentState?.push(
+      MaterialPageRoute(
+        builder: (_) =>
+            ChatScreen(chatData: doc.data() as Map<String, dynamic>),
+      ),
+    );
   } catch (e) {
     debugPrint('Chat ochishda xato: $e');
   }
@@ -83,7 +85,7 @@ Future<void> _initLocalNotifications() async {
   );
 
   await _localNotifications.initialize(
-    initSettings,
+    settings: initSettings,
     onDidReceiveNotificationResponse: (details) {
       _openChat(details.payload);
     },
@@ -116,18 +118,16 @@ Future<void> saveFcmToken() async {
     final token = await messaging.getToken();
     if (token == null) return;
 
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .update({'fcmToken': token});
+    await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+      'fcmToken': token,
+    });
 
     debugPrint('FCM Token: $token');
 
     messaging.onTokenRefresh.listen((newToken) async {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .update({'fcmToken': newToken});
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).update(
+        {'fcmToken': newToken},
+      );
     });
   } catch (e) {
     debugPrint('FCM Token xato: $e');
@@ -181,7 +181,8 @@ class MyApp extends StatelessWidget {
       builder: (_, mode, _) => MaterialApp(
         title: 'Uy Bor',
         debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightTheme,   // ← light theme (app_theme.dart ga qo'shish kerak)
+        theme: AppTheme
+            .lightTheme, // ← light theme (app_theme.dart ga qo'shish kerak)
         darkTheme: AppTheme.darkTheme,
         themeMode: mode,
         navigatorKey: navigatorKey,
@@ -234,8 +235,7 @@ class MyApp extends StatelessWidget {
                     );
                   }
 
-                  final data =
-                      userSnap.data!.data() as Map<String, dynamic>;
+                  final data = userSnap.data!.data() as Map<String, dynamic>;
                   final isAdmin = data['isAdmin'] ?? false;
 
                   return HomeScreen(isAdmin: isAdmin);

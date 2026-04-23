@@ -52,7 +52,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyB20yd7c4u0cW_PKSIeAyQRF5BH340t9cM',
-    appId: '1:484020263911:android:5f67c75f4d2e673676fb42',
+    appId: '1:484020263911:android:1bed775c82e34b4476fb42',
     messagingSenderId: '484020263911',
     projectId: 'uyborapp',
     storageBucket: 'uyborapp.firebasestorage.app',
@@ -60,12 +60,13 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDrgXxNJ1APnYb3WwTVSehIv_h_v2f9YMk',
-    appId: '1:484020263911:ios:42dbc92b7d2c460c76fb42',
+    appId: '1:484020263911:ios:35857c0ed00045cd76fb42',
     messagingSenderId: '484020263911',
     projectId: 'uyborapp',
     storageBucket: 'uyborapp.firebasestorage.app',
-    iosClientId: '484020263911-8nm6o72ppc3e01fo78m4g4uldvffps46.apps.googleusercontent.com',
-    iosBundleId: 'com.example.uyBorApp',
+    androidClientId: '484020263911-kre1dfrfvkd7h4len52o93h8f6k6dh1g.apps.googleusercontent.com',
+    iosClientId: '484020263911-0agqnopfi7kl3pe17ukicgikecblu6b6.apps.googleusercontent.com',
+    iosBundleId: 'uz.javohir.joybor',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -74,6 +75,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '484020263911',
     projectId: 'uyborapp',
     storageBucket: 'uyborapp.firebasestorage.app',
+    androidClientId: '484020263911-kre1dfrfvkd7h4len52o93h8f6k6dh1g.apps.googleusercontent.com',
     iosClientId: '484020263911-8nm6o72ppc3e01fo78m4g4uldvffps46.apps.googleusercontent.com',
     iosBundleId: 'com.example.uyBorApp',
   );
@@ -87,4 +89,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'uyborapp.firebasestorage.app',
     measurementId: 'G-42DRG7F7M0',
   );
+
 }

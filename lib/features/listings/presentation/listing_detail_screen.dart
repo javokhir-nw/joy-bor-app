@@ -44,20 +44,18 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
           .collection('users')
           .doc(ownerUid)
           .get();
-      final profilePhone =
-          (doc.data()?['phone'] ?? '').toString().trim();
+      final profilePhone = (doc.data()?['phone'] ?? '').toString().trim();
       if (mounted) setState(() => _ownerPhone = profilePhone);
     } catch (_) {}
   }
 
-Future<void> _incrementViews() async {
-  final id = widget.data['id'] ?? '';
-  if (id.isEmpty) return;
-  await FirebaseFirestore.instance
-      .collection('listings')
-      .doc(id)
-      .update({'views': FieldValue.increment(1)});
-}
+  Future<void> _incrementViews() async {
+    final id = widget.data['id'] ?? '';
+    if (id.isEmpty) return;
+    await FirebaseFirestore.instance.collection('listings').doc(id).update({
+      'views': FieldValue.increment(1),
+    });
+  }
 
   @override
   void dispose() {
@@ -74,51 +72,51 @@ Future<void> _incrementViews() async {
   }
 
   Future<void> _openChat() async {
-  final user = FirebaseAuth.instance.currentUser;
-  if (user == null) return;
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
 
-  final sellerUid = widget.data['uid'] ?? '';
-  if (sellerUid == user.uid) return;
+    final sellerUid = widget.data['uid'] ?? '';
+    if (sellerUid == user.uid) return;
 
-  final images = List<String>.from(widget.data['images'] ?? []);
-  final price = (widget.data['price'] ?? 0).toDouble();
-  final currency = widget.data['currency'] ?? 'USD';
-  final period = widget.data['period'] ?? 'oylik';
-  final sellerName = widget.data['ownerName'] ?? 'Foydalanuvchi';
+    final images = List<String>.from(widget.data['images'] ?? []);
+    final price = (widget.data['price'] ?? 0).toDouble();
+    final currency = widget.data['currency'] ?? 'USD';
+    final period = widget.data['period'] ?? 'oylik';
+    final sellerName = widget.data['ownerName'] ?? 'Foydalanuvchi';
 
-  final chatId = await ChatService.getOrCreateChat(
-    sellerUid: sellerUid,
-    sellerName: sellerName,
-    listingId: widget.data['id'] ?? '',
-    listingTitle: widget.data['title'] ?? '',
-    listingImage: images.isNotEmpty ? images[0] : '',
-    listingPrice: price,
-    listingCurrency: currency,
-    listingPeriod: period,
-  );
-
-  if (mounted) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ChatScreen(chatData: {
-          'id': chatId,
-          'listingData': widget.data, // ← to'liq ma'lumot
-          'listingTitle': widget.data['title'] ?? '',
-          'listingImage': images.isNotEmpty ? images[0] : '',
-          'listingPrice': price,
-          'listingCurrency': currency,
-          'listingPeriod': period,
-          'names': {
-            user.uid: sellerName,
-          },
-        }),
-      ),
+    final chatId = await ChatService.getOrCreateChat(
+      sellerUid: sellerUid,
+      sellerName: sellerName,
+      listingId: widget.data['id'] ?? '',
+      listingTitle: widget.data['title'] ?? '',
+      listingImage: images.isNotEmpty ? images[0] : '',
+      listingPrice: price,
+      listingCurrency: currency,
+      listingPeriod: period,
     );
-  }
-}
 
-   bool get _isOwner =>
+    if (mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ChatScreen(
+            chatData: {
+              'id': chatId,
+              'listingData': widget.data, // ← to'liq ma'lumot
+              'listingTitle': widget.data['title'] ?? '',
+              'listingImage': images.isNotEmpty ? images[0] : '',
+              'listingPrice': price,
+              'listingCurrency': currency,
+              'listingPeriod': period,
+              'names': {user.uid: sellerName},
+            },
+          ),
+        ),
+      );
+    }
+  }
+
+  bool get _isOwner =>
       FirebaseAuth.instance.currentUser?.uid == widget.data['uid'];
 
   @override
@@ -153,8 +151,11 @@ Future<void> _incrementViews() async {
                   color: Colors.black45,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(Icons.arrow_back_ios_rounded,
-                    color: Colors.white, size: 20),
+                child: const Icon(
+                  Icons.arrow_back_ios_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
               ),
             ),
             flexibleSpace: FlexibleSpaceBar(
@@ -171,23 +172,31 @@ Future<void> _incrementViews() async {
                             fit: BoxFit.cover,
                             loadingBuilder: (_, child, progress) =>
                                 progress == null
-                                    ? child
-                                    : Container(
-                                        color: AppColors.surface,
-                                        child: const Center(
-                                            child: CircularProgressIndicator(
-                                                color: AppColors.primary,
-                                                strokeWidth: 2))),
+                                ? child
+                                : Container(
+                                    color: AppColors.surface,
+                                    child: const Center(
+                                      child: CircularProgressIndicator(
+                                        color: AppColors.primary,
+                                        strokeWidth: 2,
+                                      ),
+                                    ),
+                                  ),
                             errorBuilder: (_, _, _) => Container(
                               color: AppColors.surface,
-                              child: const Icon(Icons.home_work_rounded,
-                                  color: AppColors.textSecondary, size: 64),
+                              child: const Icon(
+                                Icons.home_work_rounded,
+                                color: AppColors.textSecondary,
+                                size: 64,
+                              ),
                             ),
                           ),
                         ),
                         if (images.length > 1)
                           Positioned(
-                            bottom: 16, left: 0, right: 0,
+                            bottom: 16,
+                            left: 0,
+                            right: 0,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: List.generate(
@@ -195,7 +204,8 @@ Future<void> _incrementViews() async {
                                 (i) => AnimatedContainer(
                                   duration: const Duration(milliseconds: 200),
                                   margin: const EdgeInsets.symmetric(
-                                      horizontal: 3),
+                                    horizontal: 3,
+                                  ),
                                   width: _currentImage == i ? 20 : 6,
                                   height: 6,
                                   decoration: BoxDecoration(
@@ -209,10 +219,13 @@ Future<void> _incrementViews() async {
                             ),
                           ),
                         Positioned(
-                          top: 16, right: 16,
+                          top: 16,
+                          right: 16,
                           child: Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 5),
+                              horizontal: 10,
+                              vertical: 5,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.black54,
                               borderRadius: BorderRadius.circular(20),
@@ -220,9 +233,10 @@ Future<void> _incrementViews() async {
                             child: Text(
                               '${_currentImage + 1}/${images.length}',
                               style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600),
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                         ),
@@ -231,8 +245,11 @@ Future<void> _incrementViews() async {
                   : Container(
                       color: AppColors.surface,
                       child: const Center(
-                        child: Icon(Icons.home_work_rounded,
-                            color: AppColors.textSecondary, size: 80),
+                        child: Icon(
+                          Icons.home_work_rounded,
+                          color: AppColors.textSecondary,
+                          size: 80,
+                        ),
                       ),
                     ),
             ),
@@ -249,52 +266,74 @@ Future<void> _incrementViews() async {
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 5),
+                          horizontal: 12,
+                          vertical: 5,
+                        ),
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.15),
+                          color: AppColors.primary.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: Text(data['category'] ?? '',
-                            style: const TextStyle(
-                                color: AppColors.primary,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600)),
+                        child: Text(
+                          data['category'] ?? '',
+                          style: const TextStyle(
+                            color: AppColors.primary,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
                       const Spacer(),
-                      Row(children: [
-                        const Icon(Icons.remove_red_eye_outlined,
-                            size: 16, color: AppColors.textSecondary),
-                        const SizedBox(width: 4),
-                        Text('${data['views'] ?? 0}',
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.remove_red_eye_outlined,
+                            size: 16,
+                            color: AppColors.textSecondary,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${data['views'] ?? 0}',
                             style: const TextStyle(
-                                color: AppColors.textSecondary,
-                                fontSize: 13)),
-                      ]),
+                              color: AppColors.textSecondary,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                   const SizedBox(height: 12),
 
-                  Text(data['title'] ?? '',
-                      style: const TextStyle(
-                          color: AppColors.textPrimary,
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700)),
+                  Text(
+                    data['title'] ?? '',
+                    style: const TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                   const SizedBox(height: 12),
 
-                  Text(mainPrice,
-                      style: const TextStyle(
-                          color: AppColors.accent,
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700)),
+                  Text(
+                    mainPrice,
+                    style: const TextStyle(
+                      color: AppColors.accent,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                   const SizedBox(height: 4),
-                  Text(altPrice,
-                      style: const TextStyle(
-                          color: AppColors.textSecondary, fontSize: 14)),
+                  Text(
+                    altPrice,
+                    style: const TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 14,
+                    ),
+                  ),
                   const SizedBox(height: 20),
 
                   // Parametrlar
-                  if ((data['rooms'] ?? 0) > 0 ||
-                      (data['area'] ?? 0) > 0) ...[
+                  if ((data['rooms'] ?? 0) > 0 || (data['area'] ?? 0) > 0) ...[
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
@@ -314,9 +353,10 @@ Future<void> _incrementViews() async {
                           if ((data['rooms'] ?? 0) > 0 &&
                               (data['area'] ?? 0) > 0)
                             Container(
-                                width: 1,
-                                height: 40,
-                                color: AppColors.divider),
+                              width: 1,
+                              height: 40,
+                              color: AppColors.divider,
+                            ),
                           if ((data['area'] ?? 0) > 0)
                             Expanded(
                               child: _InfoItem(
@@ -341,17 +381,25 @@ Future<void> _incrementViews() async {
                         color: const Color(0xFF1E293B),
                         borderRadius: BorderRadius.circular(14),
                       ),
-                      child: Row(children: [
-                        const Icon(Icons.location_on_outlined,
-                            color: AppColors.primary, size: 20),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(data['address'],
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.location_on_outlined,
+                            color: AppColors.primary,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              data['address'],
                               style: const TextStyle(
-                                  color: AppColors.textPrimary,
-                                  fontSize: 14)),
-                        ),
-                      ]),
+                                color: AppColors.textPrimary,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 20),
                   ],
@@ -399,11 +447,14 @@ Future<void> _incrementViews() async {
                         color: const Color(0xFF1E293B),
                         borderRadius: BorderRadius.circular(14),
                       ),
-                      child: Text(data['description'],
-                          style: const TextStyle(
-                              color: AppColors.textPrimary,
-                              fontSize: 14,
-                              height: 1.6)),
+                      child: Text(
+                        data['description'],
+                        style: const TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 14,
+                          height: 1.6,
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 20),
                   ],
@@ -417,35 +468,41 @@ Future<void> _incrementViews() async {
                       color: const Color(0xFF1E293B),
                       borderRadius: BorderRadius.circular(14),
                     ),
-                    child: Row(children: [
-                      Container(
-                        width: 44, height: 44,
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(colors: [
-                            AppColors.primary,
-                            AppColors.secondary
-                          ]),
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: Center(
-                          child: Text(
-                            (data['ownerName'] ?? 'U')
-                                .substring(0, 1)
-                                .toUpperCase(),
-                            style: const TextStyle(
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [AppColors.primary, AppColors.secondary],
+                            ),
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: Center(
+                            child: Text(
+                              (data['ownerName'] ?? 'U')
+                                  .substring(0, 1)
+                                  .toUpperCase(),
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
-                                fontWeight: FontWeight.w700),
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(data['ownerName'] ?? "Noma'lum",
+                        const SizedBox(width: 12),
+                        Text(
+                          data['ownerName'] ?? "Noma'lum",
                           style: const TextStyle(
-                              color: AppColors.textPrimary,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600)),
-                    ]),
+                            color: AppColors.textPrimary,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 100),
                 ],
@@ -463,8 +520,8 @@ Future<void> _incrementViews() async {
               decoration: BoxDecoration(
                 color: const Color(0xFF1E293B),
                 border: Border(
-                    top: BorderSide(
-                        color: AppColors.divider, width: 0.5)),
+                  top: BorderSide(color: AppColors.divider, width: 0.5),
+                ),
               ),
               child: Row(
                 children: [
@@ -473,14 +530,17 @@ Future<void> _incrementViews() async {
                     child: OutlinedButton.icon(
                       onPressed: _openChat,
                       icon: const Icon(
-                          Icons.chat_bubble_outline_rounded, size: 18),
+                        Icons.chat_bubble_outline_rounded,
+                        size: 18,
+                      ),
                       label: const Text('Xabar'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.primary,
                         side: const BorderSide(color: AppColors.primary),
                         minimumSize: const Size(0, 54),
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14)),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
                       ),
                     ),
                   ),
@@ -498,11 +558,13 @@ Future<void> _incrementViews() async {
                           foregroundColor: Colors.white,
                           minimumSize: const Size(0, 54),
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14)),
+                            borderRadius: BorderRadius.circular(14),
+                          ),
                           elevation: 0,
                           textStyle: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ),
@@ -518,19 +580,25 @@ class _SectionLabel extends StatelessWidget {
   final String text;
   const _SectionLabel(this.text);
   @override
-  Widget build(BuildContext context) => Text(text,
-      style: const TextStyle(
-          color: AppColors.textPrimary,
-          fontSize: 16,
-          fontWeight: FontWeight.w700));
+  Widget build(BuildContext context) => Text(
+    text,
+    style: const TextStyle(
+      color: AppColors.textPrimary,
+      fontSize: 16,
+      fontWeight: FontWeight.w700,
+    ),
+  );
 }
 
 class _InfoItem extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
-  const _InfoItem(
-      {required this.icon, required this.label, required this.value});
+  const _InfoItem({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -538,15 +606,19 @@ class _InfoItem extends StatelessWidget {
       children: [
         Icon(icon, color: AppColors.primary, size: 24),
         const SizedBox(height: 6),
-        Text(value,
-            style: const TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 16,
-                fontWeight: FontWeight.w600)),
+        Text(
+          value,
+          style: const TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         const SizedBox(height: 2),
-        Text(label,
-            style: const TextStyle(
-                color: AppColors.textSecondary, fontSize: 12)),
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+        ),
       ],
     );
   }

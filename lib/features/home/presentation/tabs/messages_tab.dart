@@ -85,7 +85,7 @@ class _ChatTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: hasUnread
-                ? AppColors.primary.withOpacity(0.3)
+                ? AppColors.primary.withValues(alpha: 0.3)
                 : AppColors.divider,
           ),
         ),
@@ -102,7 +102,7 @@ class _ChatTile extends StatelessWidget {
                         colors: [AppColors.primary, AppColors.secondary]),
                 borderRadius: BorderRadius.circular(14),
                 border: isBuyer
-                    ? Border.all(color: AppColors.primary.withOpacity(0.3))
+                    ? Border.all(color: AppColors.primary.withValues(alpha: 0.3))
                     : null,
               ),
               child: isBuyer
